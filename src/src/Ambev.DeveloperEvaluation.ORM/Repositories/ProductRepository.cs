@@ -122,7 +122,7 @@ public class ProductRepository : IProductRepository
         if (pOrderParams.Count > 0) 
             sOrder = pOrderParams
                 .Select(w=> String.Format(@" ""{0}"" {1}", realNames[w.Key], w.Value))
-                .Aggregate((r,n) => String.Format(" {0} and {1} ",r,n) );
+                .Aggregate((r,n) => String.Format(" {0} , {1} ",r,n) );
         
         var pFilterParams = pFilter
             .Select(x => x)
