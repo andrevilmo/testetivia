@@ -42,11 +42,7 @@
         /// </summary>
         public decimal Price { get;  } 
 
-        /// <summary>
-        /// Gets the products rate .
-        ///
-        /// </summary>
-        //public IProductRate Rating { get;  }  
+  
 
         /// <summary>
         /// Gets the products rate id.

@@ -84,7 +84,7 @@ public static class LoggingExtension
             }
         });
 
-        builder.Services.AddLogging();
+        builder.Services.AddLogging(builder => builder.AddConsole());
 
         return builder;
     }

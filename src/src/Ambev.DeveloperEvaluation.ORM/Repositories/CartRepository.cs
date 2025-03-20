@@ -5,104 +5,93 @@ using Microsoft.EntityFrameworkCore;
 namespace Ambev.DeveloperEvaluation.ORM.Repositories;
 
 /// <summary>
-/// Implementation of IProductRepository using Entity Framework Core
+/// Implementation of ICartRepository using Entity Framework Core
 /// </summary>
-public class ProductRepository : IProductRepository
+public class CartRepository : ICartRepository
 {
     private readonly DefaultContext _context;
 
     /// <summary>
-    /// Initializes a new instance of ProductRepository
+    /// Initializes a new instance of CartRepository
     /// </summary>
     /// <param name="context">The database context</param>
-    public ProductRepository(DefaultContext context)
+    public CartRepository(DefaultContext context)
     {
         _context = context;
     }
 
     /// <summary>
-    /// Creates a new Product in the database
+    /// Creates a new Cart in the database
     /// </summary>
-    /// <param name="Product">The Product to create</param>
+    /// <param name="Cart">The Cart to create</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The created Product</returns>
-    public async Task<Product> CreateAsync(Product Product, CancellationToken cancellationToken = default)
+    /// <returns>The created Cart</returns>
+    public async Task<Cart> CreateAsync(Cart Cart, CancellationToken cancellationToken = default)
     {
-        await _context.Products.AddAsync(Product, cancellationToken);
+        var cartId = Guid.NewGuid();
+        Cart.Id = cartId;
+        Cart.Products.ToList().ForEach(p => {p.CartId = cartId; p.CreatedAt = DateTime.UtcNow;});
+        await _context.Carts.AddAsync(Cart, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
-        return Product;
+        return Cart;
     }
     /// <summary>
-    /// Updates a Product in the database
+    /// Updates a Cart in the database
     /// </summary>
-    /// <param name="Product">The Product to update</param>
+    /// <param name="Cart">The Cart to update</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The updated Product</returns>
-    public async Task<Product> UpdateAsync(Product Product, CancellationToken cancellationToken = default)
+    /// <returns>The updated Cart</returns>
+    public async Task<Cart> UpdateAsync(Cart Cart, CancellationToken cancellationToken = default)
     {
-        var r = await _context.ProductRate.FirstOrDefaultAsync(x => x.ProductId == Product.Id);
-        r.Count = Product.Rating.Count;
-        r.Rate = Product.Rating.Rate;
-        r.UpdatedAt = DateTime.UtcNow;
-        Product.Rating = r;
-        Product.Rating.Product = Product;
-        Product.UpdatedAt = DateTime.UtcNow;
-        _context.ProductRate.Update((ProductRate)Product.Rating);
-        _context.Products.Update(Product);
+        
+        Cart.UpdatedAt = DateTime.UtcNow; 
+        _context.Carts.Update(Cart);
         await _context.SaveChangesAsync(cancellationToken);
-        return Product;
+        return Cart;
     }
     
 
     /// <summary>
-    /// Retrieves a Product by their unique identifier
+    /// Retrieves a Cart by their unique identifier
     /// </summary>
-    /// <param name="id">The unique identifier of the Product</param>
+    /// <param name="id">The unique identifier of the Cart</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The Product if found, null otherwise</returns>
-    public async Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    /// <returns>The Cart if found, null otherwise</returns>
+    public async Task<Cart?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
          
-        var p = await _context.Products.FirstOrDefaultAsync
+        var p = await _context.Carts.FirstOrDefaultAsync
         (o=> o.Id == id, cancellationToken);
         if (p==null) return null;
-        var r = await _context.ProductRate.FirstOrDefaultAsync(y => y.ProductId == id,cancellationToken);
-        p.Rating = r;
+ 
         return p;
     }
 
 
      /// <summary>
-    /// Retrieves a product list by filter
+    /// Retrieves a Cart list by filter
     /// </summary>
-    /// <param name="id">The unique identifier of the Product</param>
+    /// <param name="id">The unique identifier of the Cart</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The Product if found, null otherwise</returns>
-    public async Task<List<Product>?> GetByIFilterAsync(  String pOrder = "", 
+    /// <returns>The Cart if found, null otherwise</returns>
+    public async Task<List<Cart>?> GetByIFilterAsync(  String pOrder = "", 
                                                     Dictionary<string,string> pFilter = null, 
                                                     int pPage = 1, 
                                                     int pSize = 10, 
                                                     CancellationToken cancellationToken = default)
     {
         string sValue = string.Empty;
-        string [] fieldsFilter = ["id", "title", "description", "category", "image", 
-                "price", "_maxprice", "_minprice", 
+        string [] fieldsFilter = [
+                "id",  
                 "createdat", "_maxcreatedat", "_mincreatedat", 
                 "updatedat", "_maxupdatedat", "_minupdatedat"];
-        string [] fieldsOrder = ["id", "title", "description", "category", "image", 
-                "price", 
+        string [] fieldsOrder = [
+                "id", 
                 "createdat", 
                 "updatedat"];
             var realNames = new Dictionary<string, string>{
-                     {"price" , """Price"""}
-                    ,{"createdat" , """CreatedAt"""}
+                    {"createdat" , """CreatedAt"""}
                     ,{"updatedat" , """UpdateAt"""}
-                    ,{"title" , """Title"""}
-                    ,{"description" , """Description"""}
-                    ,{"category" , """Category"""}
-                    ,{"image" , """Image"""}
-                    ,{"_minprice" , """Price"""}
-                    ,{"_maxprice" , """Price"""}
                     ,{"_maxcreatedat" , """CreatedAt"""}
                     ,{"_mincreatedat" , """CreatedAt"""}
                     ,{"_maxupdatedat" , """UpdateAt"""}
@@ -165,34 +154,34 @@ public class ProductRepository : IProductRepository
                 )
                 .Aggregate((r,n) => String.Format(" {0} and {1} ",r,n) );
         string sql = String.Format(@"
-                Select * from ""Product""
+                Select * from ""Cart""
                 {0} {1}
                 ",  String.IsNullOrEmpty(sFilter) ? @"                        ": "Where    " + sFilter, 
-                    String.IsNullOrEmpty(sOrder)  ? @" order by ""Title"" asc ": "Order by " + sOrder
+                    String.IsNullOrEmpty(sOrder)  ? @" order by ""CreatedAt"" asc ": "Order by " + sOrder
                 );
-        var p = _context.Database.SqlQueryRaw<Product>(sql)
+        var p = _context.Database.SqlQueryRaw<Cart>(sql)
                 .Skip(((pPage < 1? 1 : pPage)-1)  * pSize )
-                .Take<Product>(pSize).ToList();
-        p.ForEach(x => x.Rating = 
-                    _context.ProductRate.FirstOrDefaultAsync(y => y.ProductId == x.Id,cancellationToken).Result
+                .Take<Cart>(pSize).ToList();
+         p.ForEach(x => x.Products = 
+                    _context.CartItem.Where(y => y.CartId == x.Id).Select(y => y)
                 );
-        return p.ToList<Product>();
+        return p.ToList<Cart>();
     }
 
   
     /// <summary>
-    /// Deletes a Product from the database
+    /// Deletes a Cart from the database
     /// </summary>
-    /// <param name="id">The unique identifier of the Product to delete</param>
+    /// <param name="id">The unique identifier of the Cart to delete</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>True if the Product was deleted, false if not found</returns>
+    /// <returns>True if the Cart was deleted, false if not found</returns>
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var Product = await GetByIdAsync(id, cancellationToken);
-        if (Product == null)
+        var Cart = await GetByIdAsync(id, cancellationToken);
+        if (Cart == null)
             return false;
 
-        _context.Products.Remove(Product);
+        _context.Carts.Remove(Cart);
         await _context.SaveChangesAsync(cancellationToken);
         return true;
     }

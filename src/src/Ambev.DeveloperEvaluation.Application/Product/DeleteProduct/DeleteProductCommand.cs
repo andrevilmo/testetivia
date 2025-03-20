@@ -10,7 +10,7 @@ public record DeleteProductCommand : IRequest<DeleteProductResponse>
     /// <summary>
     /// The unique identifier of the Product to delete
     /// </summary>
-    public Guid Id { get; }
+    public Guid Id { get; set;   }
 
     /// <summary>
     /// Initializes a new instance of DeleteProductCommand

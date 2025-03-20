@@ -10,7 +10,7 @@ public record DeleteUserCommand : IRequest<DeleteUserResponse>
     /// <summary>
     /// The unique identifier of the user to delete
     /// </summary>
-    public Guid Id { get; }
+    public Guid Id { get;  set;   }
 
     /// <summary>
     /// Initializes a new instance of DeleteUserCommand

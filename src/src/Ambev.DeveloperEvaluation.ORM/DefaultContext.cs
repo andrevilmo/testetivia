@@ -8,6 +8,9 @@ namespace Ambev.DeveloperEvaluation.ORM;
 
 public class DefaultContext : DbContext
 {
+    
+    public DbSet<CartItem> CartItem { get; set; }
+    public DbSet<Cart> Carts { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductRate> ProductRate { get; set; }

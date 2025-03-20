@@ -5,7 +5,9 @@
   "scripts": {
     "dbcreate":" dotnet ef database update --project Ambev.DeveloperEvaluation.ORM --startup-project Ambev.DeveloperEvaluation.WebApi",
     "dbaddcreatedat":"dotnet ef migrations add AddCreatedAt  --project Ambev.DeveloperEvaluation.ORM --startup-project Ambev.DeveloperEvaluation.WebApi",
-    "dbaddproduct":"dotnet ef migrations add AddProduct  --project Ambev.DeveloperEvaluation.ORM --startup-project Ambev.DeveloperEvaluation.WebApi"
+    "dbaddproduct":"dotnet ef migrations add AddProduct  --project Ambev.DeveloperEvaluation.ORM --startup-project Ambev.DeveloperEvaluation.WebApi",
+    "dbaddcart":"dotnet ef migrations add AddCart  --project Ambev.DeveloperEvaluation.ORM --startup-project Ambev.DeveloperEvaluation.WebApi",
+    "dbaddcartchange":"dotnet ef migrations add AddCartChange  --project Ambev.DeveloperEvaluation.ORM --startup-project Ambev.DeveloperEvaluation.WebApi"
   },
   "author": "",
   "license": "ISC",
