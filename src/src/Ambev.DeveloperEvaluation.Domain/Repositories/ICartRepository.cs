@@ -29,7 +29,7 @@ public interface ICartRepository
     /// <param name="id">The unique identifier of the Cart</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The Cart if found, null otherwise</returns>
-    Task<Cart?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    List<Cart>? GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves a Cart list 

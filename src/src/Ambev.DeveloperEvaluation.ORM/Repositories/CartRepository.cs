@@ -57,14 +57,17 @@ public class CartRepository : ICartRepository
     /// <param name="id">The unique identifier of the Cart</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The Cart if found, null otherwise</returns>
-    public async Task<Cart?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public List<Cart>? GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    //public async Task<List<Cart>?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
          
-        var p = await _context.Carts.FirstOrDefaultAsync
-        (o=> o.Id == id, cancellationToken);
+        var p = _context.Carts.Where
+        (o=> o.Id == id).Select(x => x).ToList();
         if (p==null) return null;
- 
-        return p;
+         p.ForEach(x => x.Products = 
+                    _context.CartItem.Where(y => y.CartId == x.Id).Select(y => y)
+                );
+        return p.ToList<Cart>();
     }
 
 
@@ -90,6 +93,8 @@ public class CartRepository : ICartRepository
                 "createdat", 
                 "updatedat"];
             var realNames = new Dictionary<string, string>{
+                    {"id" , """Id"""}
+                    ,
                     {"createdat" , """CreatedAt"""}
                     ,{"updatedat" , """UpdateAt"""}
                     ,{"_maxcreatedat" , """CreatedAt"""}
@@ -177,11 +182,11 @@ public class CartRepository : ICartRepository
     /// <returns>True if the Cart was deleted, false if not found</returns>
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var Cart = await GetByIdAsync(id, cancellationToken);
+        var Cart = GetByIdAsync(id, cancellationToken);
         if (Cart == null)
             return false;
 
-        _context.Carts.Remove(Cart);
+        _context.Carts.Remove(Cart.FirstOrDefault());
         await _context.SaveChangesAsync(cancellationToken);
         return true;
     }

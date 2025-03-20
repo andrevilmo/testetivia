@@ -13,7 +13,8 @@ public class GetCartProfile : Profile
     /// </summary>
     public GetCartProfile()
     {
-        CreateMap<Cart, GetCartResult>();
+        CreateMap<Cart, GetCartResult>().ReverseMap();
+        //CreateMap<IList<Cart>, IList<GetCartResult>>().ReverseMap(); 
         
     }
 }

@@ -38,12 +38,19 @@ public class GetCartHandler : IRequestHandler<GetCartCommand, GetCartResult>
         var retEnum = new GetCartResult();
         var validator = new GetCartValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
+        var Id = request.Id;
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
         if (request.Id != null && !Guid.Empty.Equals(request.Id) ) {
-            retEnum = _mapper.Map<List<GetCartResult>>(await _CartRepository.GetByIdAsync(request.Id, cancellationToken)).FirstOrDefault();
+            var c = await _CartRepository.GetByIFilterAsync(
+                request.Order,
+                new Dictionary<string, string>{{"id",Id.ToString()}},
+                request.Page,
+                request.Size,
+                cancellationToken);
+            var p = _mapper.Map<List<GetCartResult>>(c);
+            retEnum.Data = p;
             if (retEnum == null)
                 throw new KeyNotFoundException($"Cart with ID {request.Id} not found");
         } else {

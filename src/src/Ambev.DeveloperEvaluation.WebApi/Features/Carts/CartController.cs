@@ -116,13 +116,16 @@ public class CartController : BaseController
             return BadRequest(validationResult.Errors);
         var command = _mapper.Map<GetCartCommand>(request.Id);
         try {
-            var response = await _mediator.Send(command, cancellationToken);
-            return Ok(new ApiResponseWithData<GetCartResponse>
-            {
-                Success = true,
-                Message = "Cart retrieved successfully",
-                Data = _mapper.Map<GetCartResponse>(response)
-            });
+            var result = await _mediator.Send(command, cancellationToken);
+            var response = result.Data.ToList().Select(x=>
+                    new GetCartResponse {
+                        Id = x.Id,
+                        Date = x.Date,
+                        UserId = x.UserId,
+                        Products = x.Products
+                    }
+                );
+            return Ok(response);
         } catch (KeyNotFoundException exp) {
             return new NotFoundObjectResult(exp.Message);
         } catch (Exception exp) {
