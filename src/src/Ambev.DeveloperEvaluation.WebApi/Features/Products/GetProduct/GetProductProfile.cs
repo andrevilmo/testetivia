@@ -24,13 +24,14 @@ public class GetProductProfile : Profile
                         Rate = src.Rating.Rate,
                         Count = src.Rating.Count
                     })
-            );;
-        CreateMap<GetProductResult,GetProductResponse>().ForMember(dest => dest.Rating, opt => 
+            );
+        CreateMap< GetProductResult, GetProductResponse>()
+            .ForMember(dest => dest.Rating, opt => 
                 opt.MapFrom(src => 
                     new CreateProductRateResult{
                         Rate = src.Rating.Rate,
                         Count = src.Rating.Count
-                    })
-            );;
+                    }));
+
     }
 }

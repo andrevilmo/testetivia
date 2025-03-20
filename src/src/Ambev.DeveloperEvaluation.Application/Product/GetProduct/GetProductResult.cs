@@ -46,5 +46,6 @@ public class GetProductResult
     /// </summary>
     public CreateProductRateResult Rating { get; set; } = new CreateProductRateResult();
 
- 
+
+    public List<GetProductResult> Data = new List<GetProductResult>();
 }

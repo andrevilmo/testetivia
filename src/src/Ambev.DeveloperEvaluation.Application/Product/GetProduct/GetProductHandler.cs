@@ -35,16 +35,30 @@ public class GetProductHandler : IRequestHandler<GetProductCommand, GetProductRe
     /// <returns>The Product details if found</returns>
     public async Task<GetProductResult> Handle(GetProductCommand request, CancellationToken cancellationToken)
     {
+        var retEnum = new GetProductResult();
         var validator = new GetProductValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var Product = await _ProductRepository.GetByIdAsync(request.Id, cancellationToken);
-        if (Product == null)
-            throw new KeyNotFoundException($"Product with ID {request.Id} not found");
+        if (request.Id != null && !Guid.Empty.Equals(request.Id) ) {
+            retEnum = _mapper.Map<GetProductResult>(await _ProductRepository.GetByIdAsync(request.Id, cancellationToken));
+            if (retEnum == null)
+                throw new KeyNotFoundException($"Product with ID {request.Id} not found");
+        } else {
+            var p = _mapper.Map<List<GetProductResult>>(await _ProductRepository.GetByIFilterAsync(
+                request.Order,
+                request.Filter,
+                request.Page,
+                request.Size,
+                cancellationToken));
+            retEnum.Data = p;
+            if (retEnum == null)
+                throw new KeyNotFoundException($"Product with ID {request.Id} not found");
+        }
+        
 
-        return _mapper.Map<GetProductResult>(Product);
+        return _mapper.Map<GetProductResult>(retEnum);
     }
 }

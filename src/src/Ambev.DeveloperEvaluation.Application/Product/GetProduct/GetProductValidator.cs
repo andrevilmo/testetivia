@@ -12,8 +12,9 @@ public class GetProductValidator : AbstractValidator<GetProductCommand>
     /// </summary>
     public GetProductValidator()
     {
+        /*
         RuleFor(x => x.Id)
             .NotEmpty()
-            .WithMessage("Product ID is required");
+            .WithMessage("Product ID is required");*/
     }
 }

@@ -34,7 +34,10 @@ public class Program
                         String.IsNullOrEmpty (Environment.GetEnvironmentVariable("CONNECTION_STRING"))?
                             builder.Configuration.GetConnectionString("DefaultConnection"):
                             Environment.GetEnvironmentVariable("CONNECTION_STRING"),
-                    b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
+                    b => {
+                        b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM");
+                        b.EnableRetryOnFailure();
+                    }
                 )
             );
 

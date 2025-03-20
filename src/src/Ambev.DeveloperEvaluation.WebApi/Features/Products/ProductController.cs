@@ -129,6 +129,49 @@ public class ProductsController : BaseController
         }
     }
 
+     /// <summary>
+    /// Retrieves a Product by their ID
+    /// </summary>
+    /// <param name="id">The unique identifier of the Product</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The Product details if found</returns>
+    [HttpGet]
+    [ProducesResponseType(typeof(ApiResponseWithData<GetProductResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetProductList([FromQuery] int _page, 
+                                                    [FromQuery] int _size, 
+                                                    [FromQuery] string _order, 
+                                                    CancellationToken cancellationToken)
+    {   
+        var request = new GetProductRequest { 
+                    Id = Guid.Empty, 
+                    Order = "", 
+                    Filter = null, 
+                    Page = 1, 
+                    Size = 10
+                };
+        var validator = new GetProductRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
+        var p = 
+            this.Request.Query.Select(x => new KeyValuePair<string,string> (x.Key, x.Value))
+                .ToDictionary<string,string>();
+        var command = _mapper.Map<GetProductCommand>(new GetProductCommand(pOrder: _order, pFilter: p , pPage:  _page, pSize:  _size));
+        try {
+ 
+            return Ok(    _mediator.Send(command, cancellationToken).Result.Data.Select(x => 
+                            _mapper.Map<GetProductResponse>(x) 
+                         
+                         ).ToList<GetProductResponse>());
+        } catch (KeyNotFoundException exp) {
+            return new NotFoundObjectResult(exp.Message);
+        } catch (Exception exp) {
+            return BadRequest(exp.Message + "=>" + exp.StackTrace.ToString());
+        }
+    }
+
     /// <summary>
     /// Deletes a Product by their ID
     /// </summary>

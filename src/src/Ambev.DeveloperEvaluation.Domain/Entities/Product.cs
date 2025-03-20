@@ -2,6 +2,7 @@ using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Validation;
 using Ambev.DeveloperEvaluation.Common.Model;
+using System.ComponentModel.DataAnnotations.Schema;
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
 
@@ -46,7 +47,8 @@ public class Product : BaseEntity, IProduct
     /// Gets the products rate .
     ///
     /// </summary>
-    public IProductRate Rating { get; set; } = new ProductRate();
+    [NotMapped]
+    public ProductRate Rating { get; set; } = new ProductRate();
 
 
 

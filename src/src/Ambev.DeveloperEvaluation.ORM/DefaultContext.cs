@@ -38,7 +38,9 @@ public class YourDbContextFactory : IDesignTimeDbContextFactory<DefaultContext>
         //Console.WriteLine(String.Format("STRING DE CONEXAO : {0}", connectionString));
         builder.UseNpgsql(
                connectionString,
-               b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
+               b => {b.EnableRetryOnFailure();
+                     b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM");}
+                
         );
 
         return new DefaultContext(builder.Options);

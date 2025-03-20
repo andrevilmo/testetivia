@@ -32,6 +32,21 @@ public interface IProductRepository
     Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Retrieves a Product list 
+    /// </summary>
+    /// <param name="pOrder">The order to retrieve product</param>
+    /// <param name="pFilter">The filter to retrieve product</param>
+    /// <param name="pPage">The page to retrieve list</param>
+    /// <param name="pSize">The size to retrieve products</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The Product list if found, null otherwise</returns>
+    Task<List<Product>?> GetByIFilterAsync(  String pOrder, 
+                                                    Dictionary<string,string> pFilter, 
+                                                    int pPage, 
+                                                    int pSize, 
+                                                    CancellationToken cancellationToken );
+
+    /// <summary>
     /// Deletes a Product from the repository
     /// </summary>
     /// <param name="id">The unique identifier of the Product to delete</param>
