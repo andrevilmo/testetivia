@@ -7,6 +7,9 @@
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development",
             "REDIS_HOST": "127.0.0.1,password=ev@luAt10n",
+            "MONGO_CONNECTION_STRING": "mongodb://localhost:27017",
+            "MONGO_DATABASE": "CARTS_DB",
+            "MONGO_CARTS_COLLECTION": "CARTS",
             "CONNECTION_STRING": "Host=localhost:5416;Database=developer_evaluation;Username=developer;Password=ev@luAt10n;TrustServerCertificate=True"
         },
       "dotnetRunMessages": true,
@@ -19,6 +22,9 @@
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development",
             "REDIS_HOST": "127.0.0.1,password=ev@luAt10n",
+            "MONGO_CONNECTION_STRING": "mongodb://localhost:27017",
+            "MONGO_DATABASE": "CARTS_DB",
+            "MONGO_CARTS_COLLECTION": "CARTS",
             "CONNECTION_STRING": "Host=localhost:5416;Database=developer_evaluation;Username=developer;Password=ev@luAt10n;TrustServerCertificate=True"
         },
       "dotnetRunMessages": true,
@@ -31,6 +37,9 @@
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development",
             "REDIS_HOST": "127.0.0.1,password=ev@luAt10n",
+            "MONGO_CONNECTION_STRING": "mongodb://localhost:27017",
+            "MONGO_DATABASE": "CARTS_DB",
+            "MONGO_CARTS_COLLECTION": "CARTS",
             "CONNECTION_STRING": "Host=localhost:5416;Database=developer_evaluation;Username=developer;Password=ev@luAt10n;TrustServerCertificate=True"
         }
     },
@@ -41,6 +50,9 @@
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development",
             "REDIS_HOST": "127.0.0.1,password=ev@luAt10n",
+            "MONGO_CONNECTION_STRING": "mongodb://localhost:27017",
+            "MONGO_DATABASE": "CARTS_DB",
+            "MONGO_CARTS_COLLECTION": "CARTS",
             "ASPNETCORE_URLS": "https://localhost:7181;http://localhost:5119",
             "CONNECTION_STRING": "Host=localhost:5416;Database=developer_evaluation;Username=developer;Password=ev@luAt10n;TrustServerCertificate=True"
         },
@@ -54,6 +66,9 @@
             "ASPNETCORE_HTTPS_PORTS": "8081",
             "ASPNETCORE_HTTP_PORTS": "8080",
             "REDIS_HOST": "127.0.0.1,password=ev@luAt10n",
+            "MONGO_CONNECTION_STRING": "mongodb://localhost:27017",
+            "MONGO_DATABASE": "CARTS_DB",
+            "MONGO_CARTS_COLLECTION": "CARTS",
             "CONNECTION_STRING": "Host=localhost:5416;Database=developer_evaluation;Username=developer;Password=ev@luAt10n;TrustServerCertificate=True"
         },
       "publishAllPorts": true,

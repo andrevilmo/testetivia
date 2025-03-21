@@ -5,6 +5,7 @@ using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
+using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,10 @@ public class Program
                             Environment.GetEnvironmentVariable("REDIS_HOST")
 
             ));
+
+            
+            builder.Services.AddSingleton<MongoService>();
+
             builder.Services.AddDbContext<DefaultContext>(options =>
                 options.UseNpgsql(
                         String.IsNullOrEmpty (Environment.GetEnvironmentVariable("CONNECTION_STRING"))?
@@ -95,3 +100,4 @@ public class Program
         }
     }
 }
+

@@ -31,4 +31,5 @@ WORKDIR /app
 CMD echo "------------------------------*************** LISTAGEM"
 CMD ls /app
 COPY --from=publish /app/publish .
+ENV DOTNET_EnableDiagnostics=0
 ENTRYPOINT ["dotnet", "Ambev.DeveloperEvaluation.WebApi.dll"]

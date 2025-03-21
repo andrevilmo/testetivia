@@ -12,6 +12,7 @@ using Ambev.DeveloperEvaluation.WebApi.Features.Carts.UpdateCart;
 using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Linq;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts;
 
@@ -25,15 +26,18 @@ public class CartController : BaseController
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
+    private readonly MongoService _mongoService;
+
     /// <summary>
     /// Initializes a new instance of CartsController
     /// </summary>
     /// <param name="mediator">The mediator instance</param>
     /// <param name="mapper">The AutoMapper instance</param>
-    public CartController(IMediator mediator, IMapper mapper)
+    public CartController(IMediator mediator, IMapper mapper, MongoService mongoService)
     {
         _mediator = mediator;
         _mapper = mapper;
+        _mongoService = mongoService;
     }
 
     /// <summary>
@@ -55,7 +59,7 @@ public class CartController : BaseController
 
         var command = _mapper.Map<CreateCartCommand>(request);
         var response = await _mediator.Send(command, cancellationToken);
-
+        await _mongoService.CreateAsync( _mapper.Map<Cart>(response) );
         return Created(string.Empty, new ApiResponseWithData<CreateCartResponse>
         {
             Success = true,
@@ -84,7 +88,8 @@ public class CartController : BaseController
         try {
             var command = _mapper.Map<UpdateCartCommand>(request);
                 var response = await _mediator.Send(command, cancellationToken);
-
+                var cart = _mapper.Map<Cart>(response);
+                await _mongoService.UpdateAsync( cart.Id, cart );
                 return Ok (new ApiResponseWithData<UpdateCartResponse>
                 {
                     Success = true,
@@ -114,8 +119,13 @@ public class CartController : BaseController
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
+        
+        var cart = await _mongoService.GetAsync( request.Id );
+        if (cart != null)
+            return Ok(cart);
         var command = _mapper.Map<GetCartCommand>(request.Id);
         try {
+            
             var result = await _mediator.Send(command, cancellationToken);
             var response = result.Data.ToList().Select(x=>
                     new GetCartResponse {
@@ -125,6 +135,8 @@ public class CartController : BaseController
                         Products = x.Products
                     }
                 );
+            cart = _mapper.Map<Cart>(_mapper.Map<Cart>(response.First()));
+            await _mongoService.CreateAsync(cart);
             return Ok(response);
         } catch (KeyNotFoundException exp) {
             return new NotFoundObjectResult(exp.Message);

@@ -1,5 +1,6 @@
 using Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 using Ambev.DeveloperEvaluation.Application.Carts.GetCart;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.WebApi.Features.Carts.CreateCart;
 using AutoMapper;
 
@@ -19,6 +20,7 @@ public class GetCartProfile : Profile
         .ConstructUsing(id => new Application.Carts.GetCart.GetCartCommand(id));
         CreateMap<GetCartResult , GetCartResponse>().ReverseMap();
         CreateMap<GetCartResponse, GetCartResult>().ReverseMap();
+        CreateMap<GetCartResponse, Cart>().ReverseMap();
         
     }
 }
