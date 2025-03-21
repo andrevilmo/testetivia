@@ -9,8 +9,10 @@ using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 using StackExchange.Redis;
+using Serilog.Sinks.Debug;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -18,11 +20,12 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args); 
         try
         {
             Log.Information("Starting web application");
 
-            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
             builder.AddDefaultLogging();
 
             builder.Services.AddControllers();
@@ -69,8 +72,10 @@ public class Program
             });
 
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            
 
             var app = builder.Build();
+            
             app.UseMiddleware<ValidationExceptionMiddleware>();
 
             if (app.Environment.IsDevelopment())
@@ -79,7 +84,7 @@ public class Program
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -92,6 +97,11 @@ public class Program
         }
         catch (Exception ex)
         {
+            Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .CreateLogger();
+            Log.Debug(String.Format( "Error on Startup {0}", ex.Message + " => " + ex.StackTrace.ToString()));
+            Log.Information(String.Format( "Error on Startup {0}", ex.Message + " => " + ex.StackTrace.ToString()));
             Log.Fatal(ex, "Application terminated unexpectedly");
         }
         finally

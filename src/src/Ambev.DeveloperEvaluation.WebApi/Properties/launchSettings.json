@@ -63,7 +63,6 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
         "environmentVariables": {
-            "ASPNETCORE_HTTPS_PORTS": "8081",
             "ASPNETCORE_HTTP_PORTS": "8080",
             "REDIS_HOST": "127.0.0.1,password=ev@luAt10n",
             "MONGO_CONNECTION_STRING": "mongodb://localhost:27017",
@@ -72,7 +71,7 @@
             "CONNECTION_STRING": "Host=localhost:5416;Database=developer_evaluation;Username=developer;Password=ev@luAt10n;TrustServerCertificate=True"
         },
       "publishAllPorts": true,
-      "useSSL": true
+      "useSSL": false
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",

@@ -53,6 +53,7 @@ public static class LoggingExtension
     public static WebApplicationBuilder AddDefaultLogging(this WebApplicationBuilder builder)
     {
         Log.Logger = new LoggerConfiguration().CreateLogger();
+        /*
         builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
         {
             loggerConfiguration
@@ -82,7 +83,7 @@ public static class LoggingExtension
                         outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}"
                     );
             }
-        });
+        });*/
 
         builder.Services.AddLogging(builder => builder.AddConsole());
 
