@@ -16,7 +16,7 @@ services:
       MONGO_CONNECTION_STRING: mongodb://10.5.0.7:27017
       MONGO_DATABASE: CARTS_DB
       MONGO_CARTS_COLLECTION: CARTS
-      CONNECTION_STRING: "Host=10.5.0.8:5416;Database=developer_evaluation;Username=developer;Password=ev@luAt10n;TrustServerCertificate=True"
+      CONNECTION_STRING: "Host=10.5.0.8:5432;Database=developer_evaluation;Username=developer;Password=ev@luAt10n;TrustServerCertificate=True"
 
     ports:
       - "8080:8080"
@@ -38,8 +38,7 @@ services:
       POSTGRES_USER: developer
       POSTGRES_PASSWORD: ev@luAt10n
     ports:
-      - "5416:5432"
-      - "5432"
+      - "0.0.0.0:5416:5432"
     networks:
       backend:
         ipv4_address: 10.5.0.8
@@ -67,6 +66,7 @@ networks:
   backend:
     driver: bridge
     ipam:
+     driver: default
      config:
        - subnet: 10.5.0.0/16
          gateway: 10.5.0.1
