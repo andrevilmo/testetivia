@@ -11,6 +11,8 @@ using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.UpdateProduct;
 using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.Text.Json;
+using StackExchange.Redis;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Products;
 
@@ -23,16 +25,20 @@ public class ProductsController : BaseController
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly IConnectionMultiplexer _redis;
+    private readonly   IDatabase dbCache;
 
     /// <summary>
     /// Initializes a new instance of ProductsController
     /// </summary>
     /// <param name="mediator">The mediator instance</param>
     /// <param name="mapper">The AutoMapper instance</param>
-    public ProductsController(IMediator mediator, IMapper mapper)
+    public ProductsController(IMediator mediator, IMapper mapper, IConnectionMultiplexer redis)
     {
         _mediator = mediator;
         _mapper = mapper;
+        _redis = redis;
+         dbCache = redis.GetDatabase();
     }
 
     /// <summary>
@@ -116,12 +122,16 @@ public class ProductsController : BaseController
         var command = _mapper.Map<GetProductCommand>(request.Id);
         try {
             var response = await _mediator.Send(command, cancellationToken);
-            return Ok(new ApiResponseWithData<GetProductResponse>
-            {
-                Success = true,
-                Message = "Product retrieved successfully",
-                Data = _mapper.Map<GetProductResponse>(response)
-            });
+
+            var chaveCache = "PRODUTOS_BY_ID_"
+                + Convert.ToBase64String( System.Text.ASCIIEncoding.UTF8.GetBytes( JsonSerializer.Serialize(request)));
+            var cache = dbCache.StringGet(chaveCache);
+            if (cache.HasValue)
+                return Ok(JsonSerializer.Deserialize<GetProductResponse>(cache));
+            var ret =  _mapper.Map<GetProductResponse>(response); 
+                        
+            dbCache.StringSet(chaveCache,JsonSerializer.Serialize(ret));
+            return Ok( ret );
         } catch (KeyNotFoundException exp) {
             return new NotFoundObjectResult(exp.Message);
         } catch (Exception exp) {
@@ -163,29 +173,36 @@ public class ProductsController : BaseController
         p.Add("category",category);
         var command = _mapper.Map<GetProductCommand>(new GetProductCommand(pOrder: _order, pFilter: p , pPage:  _page, pSize:  _size));
         try {
- 
-            return Ok(    _mediator.Send(command, cancellationToken).Result.Data.Select(x => 
+            var chaveCache = "PRODUTOS_CATEGORIA_"
+                + Convert.ToBase64String( System.Text.ASCIIEncoding.UTF8.GetBytes( JsonSerializer.Serialize(request)));
+            var cache = dbCache.StringGet(chaveCache); 
+            if (cache.HasValue)
+                return Ok(JsonSerializer.Deserialize<List<GetProductResponse>>(cache));
+            var ret = _mediator.Send(command, cancellationToken).Result.Data.Select(x => 
                             _mapper.Map<GetProductResponse>(x) 
                          
-                         ).ToList<GetProductResponse>());
+                         ).ToList<GetProductResponse>();
+                         
+             dbCache.StringSet(chaveCache,JsonSerializer.Serialize(ret));
+            return Ok( ret );
         } catch (KeyNotFoundException exp) {
             return new NotFoundObjectResult(exp.Message);
         } catch (Exception exp) {
             return BadRequest(exp.Message + "=>" + exp.StackTrace.ToString());
         }
+       
     }
 
     /// <summary>
-    /// Retrieves a Product by their ID
+    /// Retrieves a Product by search
     /// </summary>
-    /// <param name="id">The unique identifier of the Product</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The Product details if found</returns>
     [HttpGet]
     [ProducesResponseType(typeof(ApiResponseWithData<GetProductResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetProductListByCategory( 
+    public async Task<IActionResult> GetProductListBySearch( 
                                                     CancellationToken cancellationToken,
                                                     [FromQuery] int _page = 1, 
                                                     [FromQuery] int _size = 10, 
@@ -207,11 +224,17 @@ public class ProductsController : BaseController
                 .ToDictionary<string,string>();
         var command = _mapper.Map<GetProductCommand>(new GetProductCommand(pOrder: _order, pFilter: p , pPage:  _page, pSize:  _size));
         try {
- 
-            return Ok(    _mediator.Send(command, cancellationToken).Result.Data.Select(x => 
-                            _mapper.Map<GetProductResponse>(x) 
-                         
-                         ).ToList<GetProductResponse>());
+                var chaveCache = "PRODUTOS_BY_SEARCH_"
+                        + Convert.ToBase64String( System.Text.ASCIIEncoding.UTF8.GetBytes( JsonSerializer.Serialize(request)));
+                    var cache = dbCache.StringGet(chaveCache);
+                    if (cache.HasValue)
+                        return Ok(JsonSerializer.Deserialize<List<GetProductResponse>>(cache));
+                    var ret =  _mediator.Send(command, cancellationToken).Result.Data.Select(x => 
+                            _mapper.Map<GetProductResponse>(x)); 
+                                
+                    dbCache.StringSet(chaveCache,JsonSerializer.Serialize(ret));
+                    return Ok( ret );
+
         } catch (KeyNotFoundException exp) {
             return new NotFoundObjectResult(exp.Message);
         } catch (Exception exp) {

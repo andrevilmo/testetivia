@@ -6,6 +6,7 @@
       "launchUrl": "swagger",
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development",
+            "REDIS_HOST": "127.0.0.1,password=ev@luAt10n",
             "CONNECTION_STRING": "Host=localhost:5416;Database=developer_evaluation;Username=developer;Password=ev@luAt10n;TrustServerCertificate=True"
         },
       "dotnetRunMessages": true,
@@ -17,6 +18,7 @@
       "launchUrl": "swagger",
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development",
+            "REDIS_HOST": "127.0.0.1,password=ev@luAt10n",
             "CONNECTION_STRING": "Host=localhost:5416;Database=developer_evaluation;Username=developer;Password=ev@luAt10n;TrustServerCertificate=True"
         },
       "dotnetRunMessages": true,
@@ -28,6 +30,7 @@
       "launchUrl": "swagger",
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development",
+            "REDIS_HOST": "127.0.0.1,password=ev@luAt10n",
             "CONNECTION_STRING": "Host=localhost:5416;Database=developer_evaluation;Username=developer;Password=ev@luAt10n;TrustServerCertificate=True"
         }
     },
@@ -37,6 +40,7 @@
       "launchUrl": "https://localhost:7181/swagger",
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development",
+            "REDIS_HOST": "127.0.0.1,password=ev@luAt10n",
             "ASPNETCORE_URLS": "https://localhost:7181;http://localhost:5119",
             "CONNECTION_STRING": "Host=localhost:5416;Database=developer_evaluation;Username=developer;Password=ev@luAt10n;TrustServerCertificate=True"
         },
@@ -49,6 +53,7 @@
         "environmentVariables": {
             "ASPNETCORE_HTTPS_PORTS": "8081",
             "ASPNETCORE_HTTP_PORTS": "8080",
+            "REDIS_HOST": "127.0.0.1,password=ev@luAt10n",
             "CONNECTION_STRING": "Host=localhost:5416;Database=developer_evaluation;Username=developer;Password=ev@luAt10n;TrustServerCertificate=True"
         },
       "publishAllPorts": true,

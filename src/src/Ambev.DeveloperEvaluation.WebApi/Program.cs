@@ -9,6 +9,7 @@ using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using StackExchange.Redis;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -28,7 +29,14 @@ public class Program
 
             builder.AddBasicHealthChecks();
             builder.Services.AddSwaggerGen();
+            
+            builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(
 
+                        String.IsNullOrEmpty (Environment.GetEnvironmentVariable("REDIS_HOST"))?
+                            builder.Configuration.GetConnectionString("REDIS_HOST"):
+                            Environment.GetEnvironmentVariable("REDIS_HOST")
+
+            ));
             builder.Services.AddDbContext<DefaultContext>(options =>
                 options.UseNpgsql(
                         String.IsNullOrEmpty (Environment.GetEnvironmentVariable("CONNECTION_STRING"))?
