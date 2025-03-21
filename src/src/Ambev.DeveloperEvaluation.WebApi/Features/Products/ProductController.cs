@@ -13,6 +13,7 @@ using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Text.Json;
 using StackExchange.Redis;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Products;
 
@@ -20,6 +21,8 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products;
 /// Controller for managing Product operations
 /// </summary>
 [ApiController]
+
+[Authorize]
 [Route("api/[controller]")]
 public class ProductsController : BaseController
 {

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 using StackExchange.Redis;
 using Serilog.Sinks.Debug;
+using Microsoft.OpenApi.Models;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -20,8 +21,8 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args); 
+
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
         try
         {
             Log.Information("Starting web application");
@@ -32,25 +33,54 @@ public class Program
             builder.Services.AddEndpointsApiExplorer();
 
             builder.AddBasicHealthChecks();
-            builder.Services.AddSwaggerGen();
-            
+            builder.Services.AddSwaggerGen(option =>
+            {
+                option.SwaggerDoc("v1", new OpenApiInfo { Title = "Ambev Evaluation", Version = "v1" });
+
+                option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter a valid token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "Bearer"
+                });
+
+                option.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
+
             builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(
 
-                        String.IsNullOrEmpty (Environment.GetEnvironmentVariable("REDIS_HOST"))?
-                            builder.Configuration.GetConnectionString("REDIS_HOST"):
+                        String.IsNullOrEmpty(Environment.GetEnvironmentVariable("REDIS_HOST")) ?
+                            builder.Configuration.GetConnectionString("REDIS_HOST") :
                             Environment.GetEnvironmentVariable("REDIS_HOST")
 
             ));
 
-            
+
             builder.Services.AddSingleton<MongoService>();
 
             builder.Services.AddDbContext<DefaultContext>(options =>
                 options.UseNpgsql(
-                        String.IsNullOrEmpty (Environment.GetEnvironmentVariable("CONNECTION_STRING"))?
-                            builder.Configuration.GetConnectionString("DefaultConnection"):
+                        String.IsNullOrEmpty(Environment.GetEnvironmentVariable("CONNECTION_STRING")) ?
+                            builder.Configuration.GetConnectionString("DefaultConnection") :
                             Environment.GetEnvironmentVariable("CONNECTION_STRING"),
-                    b => {
+                    b =>
+                    {
                         b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM");
                         b.EnableRetryOnFailure();
                     }
@@ -72,10 +102,10 @@ public class Program
             });
 
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-            
+
 
             var app = builder.Build();
-            
+
             app.UseMiddleware<ValidationExceptionMiddleware>();
 
             if (app.Environment.IsDevelopment())
@@ -100,8 +130,8 @@ public class Program
             Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
             .CreateLogger();
-            Log.Debug(String.Format( "Error on Startup {0}", ex.Message + " => " + ex.StackTrace.ToString()));
-            Log.Information(String.Format( "Error on Startup {0}", ex.Message + " => " + ex.StackTrace.ToString()));
+            Log.Debug(String.Format("Error on Startup {0}", ex.Message + " => " + ex.StackTrace.ToString()));
+            Log.Information(String.Format("Error on Startup {0}", ex.Message + " => " + ex.StackTrace.ToString()));
             Log.Fatal(ex, "Application terminated unexpectedly");
         }
         finally

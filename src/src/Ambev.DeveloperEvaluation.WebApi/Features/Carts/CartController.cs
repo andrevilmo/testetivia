@@ -13,12 +13,14 @@ using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Linq;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts;
 
 /// <summary>
 /// Controller for managing Cart operations
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class CartController : BaseController
