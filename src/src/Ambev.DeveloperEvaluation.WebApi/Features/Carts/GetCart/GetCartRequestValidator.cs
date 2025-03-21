@@ -12,9 +12,6 @@ public class GetCartRequestValidator : AbstractValidator<GetCartRequest>
     /// </summary>
     public GetCartRequestValidator()
     {
-        /*
-        RuleFor(x => x.Id)
-            .NotEmpty()
-            .WithMessage("Cart ID is required");*/
+       
     }
 }

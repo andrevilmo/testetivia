@@ -24,6 +24,12 @@
         public DateTime Date { get; set; }
 
         /// <summary>
+        /// Gets the cart discount .
+        ///
+        /// </summary>
+        public decimal Discount { get; set; }
+
+        /// <summary>
         /// Gets the date and time when the Cart was created.
         /// </summary>
         public DateTime CreatedAt { get; set; }

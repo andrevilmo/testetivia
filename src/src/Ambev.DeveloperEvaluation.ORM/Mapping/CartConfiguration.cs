@@ -13,6 +13,7 @@ public class CartConfiguration : IEntityTypeConfiguration<Cart>
         builder.Property(u => u.Id).HasColumnType("uuid").HasDefaultValueSql("gen_random_uuid()");
 
         builder.Property(u => u.Date);
+        builder.Property(u => u.Discount);
         builder.Property(u => u.UserId); 
         builder.Property(u => u.UpdatedAt);
         builder.Property(u => u.CreatedAt);

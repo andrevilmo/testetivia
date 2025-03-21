@@ -14,7 +14,6 @@ public class GetCartProfile : Profile
     public GetCartProfile()
     {
         CreateMap<Cart, GetCartResult>().ReverseMap();
-        //CreateMap<IList<Cart>, IList<GetCartResult>>().ReverseMap(); 
-        
+       
     }
 }

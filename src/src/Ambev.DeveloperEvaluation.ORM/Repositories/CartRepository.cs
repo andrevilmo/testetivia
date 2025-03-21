@@ -29,8 +29,13 @@ public class CartRepository : ICartRepository
     public async Task<Cart> CreateAsync(Cart Cart, CancellationToken cancellationToken = default)
     {
         var cartId = Guid.NewGuid();
+        Cart = updateDiscount(Cart);
         Cart.Id = cartId;
-        Cart.Products.ToList().ForEach(p => {p.CartId = cartId; p.CreatedAt = DateTime.UtcNow;});
+        Cart.Products.ToList().ForEach(p => {
+            p.CartId = cartId; 
+            p.CreatedAt = DateTime.UtcNow;
+            _context.CartItem.AddAsync(p, cancellationToken);    
+        });
         await _context.Carts.AddAsync(Cart, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
         return Cart;
@@ -43,13 +48,53 @@ public class CartRepository : ICartRepository
     /// <returns>The updated Cart</returns>
     public async Task<Cart> UpdateAsync(Cart Cart, CancellationToken cancellationToken = default)
     {
-        
+        Cart = updateDiscount(Cart);
         Cart.UpdatedAt = DateTime.UtcNow; 
+        Cart.Products.ToList().ForEach(p => {
+            p.UpdatedAt = DateTime.UtcNow;
+            _context.CartItem.Update(p);    
+        });
         _context.Carts.Update(Cart);
         await _context.SaveChangesAsync(cancellationToken);
         return Cart;
     }
     
+
+    private Cart updateDiscount(Cart cart) {
+         cart.Products.ToList().ForEach(x => x.Product = 
+                    _context.Products.Where(y => y.Id == x.ProductId).Select(y => y).FirstOrDefault()
+                );
+        var productosFrom10To20 =  cart.Products.Select(v =>
+            new {
+                    ProductId = v.ProductId,
+                    Quantity = v.Quantity, 
+                    Price = v.Product.Price
+                }
+            ).GroupBy(x => x.ProductId).Select(i=>
+            new {
+                MProductId = i.Key,
+                MProductPrice = i.First().Price,
+                Qtd = i.Sum(r => r.Quantity)
+            }
+        ).Where( x => x.Qtd > 10 &&   x.Qtd <= 20).ToList();
+        var productosFrom4To10 =  cart.Products.Select(v =>
+            new {
+                    ProductId = v.ProductId,
+                    Quantity = v.Quantity, 
+                    Price = v.Product.Price
+                }
+            ).GroupBy(x => x.ProductId).Select(i=>
+            new {
+                MProductId = i.Key,
+                MProductPrice = i.First().Price,
+                Qtd = i.Sum(r => r.Quantity)
+            }
+        ).Where( x => x.Qtd >= 4  &&   x.Qtd <= 10).ToList();
+        cart.Discount =
+                     productosFrom10To20.Sum( x => (x.Qtd * x.MProductPrice) * (decimal)0.20 ) +
+                     productosFrom4To10.Sum( x => (x.Qtd * x.MProductPrice) * (decimal)0.10 );
+        return cart;
+    }
 
     /// <summary>
     /// Retrieves a Cart by their unique identifier

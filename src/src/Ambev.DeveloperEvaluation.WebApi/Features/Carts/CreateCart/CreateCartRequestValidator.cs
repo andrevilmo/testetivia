@@ -19,6 +19,16 @@ public class CreateCartRequestValidator : AbstractValidator<CreateCartRequest>
     /// </remarks>
     public CreateCartRequestValidator()
     {
-         
-   }
+        RuleFor(x => 
+                x.Products
+                .Select(x=>new {ProductId=x.ProductId, Qtd=x.Quantity})
+                .GroupBy(y=>y.ProductId)
+                .Select(i=>new {Id=i.Key,Qtd=i.Sum(g=>g.Qtd)})
+                .Where(f=>f.Qtd>20)
+            ).Must(list => list.Count() > 0)
+            .WithMessage("Products total count cannot more than 20 ");
+        RuleFor(x => x.Products)
+            .NotEmpty()
+            .WithMessage("Cart ID is required");
+    }
 }

@@ -33,6 +33,12 @@ public class GetCartResponse
         public DateTime CreatedAt { get; set; }
 
         /// <summary>
+        /// Gets the cart discount .
+        ///
+        /// </summary>
+        public decimal Discount { get; set; }
+
+        /// <summary>
         /// Gets the date and time of the last update to the Cart's information.
         /// </summary>
         public DateTime? UpdatedAt { get; set; }

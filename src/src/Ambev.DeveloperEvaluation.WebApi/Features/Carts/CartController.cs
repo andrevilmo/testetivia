@@ -84,7 +84,12 @@ public class CartController : BaseController
     {
         var validator = new UpdateCartRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
+        var qtd = 
+        request.Products
+                .Select(x=>new {ProductId=x.ProductId, Qtd=x.Quantity})
+                .GroupBy(y=>y.ProductId)
+                .Select(i=>new {Id=i.Key,Qtd=i.Sum(g=>g.Qtd)})
+                .Where(f=>f.Qtd>20).ToList();
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
         try {
@@ -134,7 +139,8 @@ public class CartController : BaseController
                         Id = x.Id,
                         Date = x.Date,
                         UserId = x.UserId,
-                        Products = x.Products
+                        Products = x.Products,
+                        Discount = x.Discount
                     }
                 );
             cart = _mapper.Map<Cart>(_mapper.Map<Cart>(response.First()));
@@ -184,7 +190,8 @@ public class CartController : BaseController
                         Id = x.Id,
                         Date = x.Date,
                         UserId = x.UserId,
-                        Products = x.Products
+                        Products = x.Products,
+                        Discount = x.Discount
                     }
                 );
             return Ok(response);

@@ -27,6 +27,12 @@ public class GetCartResult
   public DateTime Date { get; set; } = DateTime.Now;
 
 
+  /// <summary>
+  /// Gets the cart discount .
+  ///
+  /// </summary>
+  public decimal Discount { get; set; }
+  
   public ICollection<CartItem> Products;
 
 

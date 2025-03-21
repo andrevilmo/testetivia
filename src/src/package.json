@@ -8,6 +8,7 @@
     "dbaddproduct":"dotnet ef migrations add AddProduct  --project Ambev.DeveloperEvaluation.ORM --startup-project Ambev.DeveloperEvaluation.WebApi",
     "dbaddcart":"dotnet ef migrations add AddCart  --project Ambev.DeveloperEvaluation.ORM --startup-project Ambev.DeveloperEvaluation.WebApi",
     "dbaddcartchange":"dotnet ef migrations add AddCartChange  --project Ambev.DeveloperEvaluation.ORM --startup-project Ambev.DeveloperEvaluation.WebApi",
+    "dbaddcartdiscountchange":"dotnet ef migrations add AddCartDiscount  --project Ambev.DeveloperEvaluation.ORM --startup-project Ambev.DeveloperEvaluation.WebApi",
     "addredissupport":"cd Ambev.DeveloperEvaluation.WebApi && dotnet add .\\Ambev.DeveloperEvaluation.WebApi.csproj package Microsoft.Extensions.Caching.Redis"
 
   },

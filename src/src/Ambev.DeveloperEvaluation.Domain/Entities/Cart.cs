@@ -23,6 +23,11 @@ public class Cart : BaseEntity, ICart
     /// </summary>
     public DateTime Date { get; set; } = DateTime.Now;
 
+    /// <summary>
+    /// Gets the cart discount .
+    ///
+    /// </summary>
+    public decimal Discount { get; set; } = 0;
 
     /// <summary>
     /// Gets the Cart's items

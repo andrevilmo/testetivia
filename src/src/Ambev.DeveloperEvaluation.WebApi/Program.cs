@@ -62,7 +62,7 @@ public class Program
                     }
                 });
             });
-
+            
             builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(
 
                         String.IsNullOrEmpty(Environment.GetEnvironmentVariable("REDIS_HOST")) ?
@@ -75,7 +75,8 @@ public class Program
             builder.Services.AddSingleton<MongoService>();
 
             builder.Services.AddDbContext<DefaultContext>(options =>
-                options.UseNpgsql(
+                options.EnableSensitiveDataLogging()
+                .UseNpgsql(
                         String.IsNullOrEmpty(Environment.GetEnvironmentVariable("CONNECTION_STRING")) ?
                             builder.Configuration.GetConnectionString("DefaultConnection") :
                             Environment.GetEnvironmentVariable("CONNECTION_STRING"),
